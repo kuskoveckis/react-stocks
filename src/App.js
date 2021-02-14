@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import "./App.css";
+import AlertMsg from "./components/AlertMsg";
+import Error from "./components/Error";
 
 function App() {
+  // const fetchData = async () => {
+  //   const response = await fetch("https://cloud.iexapis.com/stable/stock/aapl/quote?token={}");
+  //   const data = await response.json();
+  //   console.log(data);
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Link to="/quote">Quote</Link>
+      </div>
+      <Switch>
+        <Route exact path="/quote">
+          <div>Quote Component</div>
+        </Route>
+        <Route exact path="/alert">
+          <AlertMsg />
+        </Route>
+        <Route path="*">
+          <Error />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
