@@ -35,6 +35,16 @@ const initialState = {
   initial_value: 15000,
 };
 
+// const fetchData = async () => {
+//   const response = await fetch("https://cloud.iexapis.com/stable/stock/aapl/quote?token={}");
+//   const data = await response.json();
+//   console.log(data);
+// };
+
+// useEffect(() => {
+//   fetchData();
+// }, []);
+
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return <AppContext.Provider value={{ ...state }}>{children}</AppContext.Provider>;
