@@ -46,7 +46,7 @@ const Quote = () => {
     <Container className={classes.container} maxWidth="lg">
       {/* search form */}
       <Grid>
-        <Paper component="form" className={classes.search}>
+        <Paper className={classes.search}>
           <Search />
         </Paper>
       </Grid>
@@ -57,14 +57,20 @@ const Quote = () => {
           <StockQuoteChart />
         </Paper>
       </Grid>
-      <Grid>
-        <Paper>
+      <Grid container direction="row" spacing={4} justify="center" alignItems="center">
+        <Grid item md={6} lg={4}>
           <News />
-        </Paper>
+        </Grid>
+        <Grid item md={6} lg={4}>
+          <News />
+        </Grid>
+        <Grid item md lg={4}>
+          <News />
+        </Grid>
       </Grid>
-      <Typography variant="overline" align="center" display="block" className={classes.margin}>
+      {/* <Typography variant="overline" align="center" display="block" className={classes.margin}>
         Data provided by IEX Cloud
-      </Typography>
+      </Typography> */}
     </Container>
   );
 };

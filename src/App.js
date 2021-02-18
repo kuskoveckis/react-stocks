@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
-import Box from "@material-ui/core/Box";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
@@ -17,7 +16,6 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "./components/listItems";
-
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import Error from "./components/Error";
@@ -171,6 +169,9 @@ function App() {
             </Route>
           </Switch>
           {/* Pages/sections would be placed here */}
+          <Typography variant="overline" align="center" display="block" className={classes.margin}>
+            Data provided by IEX Cloud
+          </Typography>
         </main>
       </div>
     </Router>
