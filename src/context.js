@@ -24,10 +24,12 @@ const getLocalStorageHistory = () => {
 const initialState = {
   alert: { show: false, severity: "", title: "", msg: "" },
   error: false,
+  isLoading: false,
+  render: false,
   portfolio: getLocalStoragePortfolio(),
   history: getLocalStorageHistory(),
   quoteSymbol: "",
-  quote: [],
+  stock_quote_data: {},
   news: [],
   intradayData: [],
   stock_total: 0,
@@ -36,18 +38,17 @@ const initialState = {
 };
 
 const AppProvider = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [searchQuote, setSearchQuote] = useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const quote = (symbol) => {
+    dispatch({ type: "LOADING" });
     dispatch({ type: "QUOTE_SYMBOL", payload: symbol });
   };
 
   const stockQuote = async () => {
-    setLoading(true);
-    setSearchQuote(true);
     try {
+      dispatch({ type: "RENDER" });
+      dispatch({ type: "LOADING" });
       const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/quote?token={}`);
       const data = await response.json();
       // if (data) {
@@ -65,46 +66,40 @@ const AppProvider = ({ children }) => {
       //   console.log("test test test");
       //   dispatch({ type: "STOCK_QUOTE_FAIL", payload: { newData, updateQuoteSymbol } });
       // }
-      dispatch({ type: "STOCK_QUOTE", payload: data });
-      setLoading(false);
-      setSearchQuote(false);
+      const reset = "";
+      dispatch({ type: "STOCK_QUOTE", payload: [data, reset] });
     } catch (error) {
-      console.log(state.quoteSymbol);
       console.log(error);
-      setLoading(false);
-      setSearchQuote(false);
+      dispatch({ type: "FINISHED_LOADING" });
     }
   };
 
   const stockNews = async () => {
-    setLoading(true);
     try {
-      const response = await fetch("https://cloud.iexapis.com/stable/stock/aapl/news/last/3?token={}");
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/news/last/3?token={}`);
       const data = await response.json();
       dispatch({ type: "STOCK_NEWS", payload: data });
-      setLoading(false);
     } catch (error) {
-      console.log("fetch news error!");
-      setLoading(false);
+      console.log(error);
     }
   };
 
   const stockIntradayPrice = async () => {
-    setLoading(true);
     try {
       const response = await fetch("https://cloud.iexapis.com/stable/stock/aapl/intraday-prices?token={}");
       const data = await response.json();
       dispatch({ type: "STOCK_INTRADAY", payload: data });
-      setLoading(false);
     } catch (error) {
-      console.log("fetch intraday error!");
-      setLoading(false);
+      console.log(error);
     }
   };
 
-  // useEffect(() => {
-  //   stockQuote();
-  // }, [state.quoteSymbol]);
+  useEffect(() => {
+    if (state.quoteSymbol) {
+      stockQuote();
+      stockNews();
+    }
+  }, [state.quoteSymbol]);
 
   return <AppContext.Provider value={{ ...state, quote }}>{children}</AppContext.Provider>;
 };

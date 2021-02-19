@@ -5,10 +5,10 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Search from "../components/Search";
-import StockQuote from "../components/StockQuote";
-import StockQuoteChart from "../components/StockQuoteChart";
 import News from "../components/News";
-import { Typography } from "@material-ui/core";
+import { useGlobalContext } from "../context";
+import Loading from "../components/Loading";
+import StockQuoteCard from "../components/StockQuoteCard";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Quote = () => {
+  const { render, isLoading, news } = useGlobalContext();
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   return (
@@ -51,26 +52,29 @@ const Quote = () => {
         </Paper>
       </Grid>
       {/* search results */}
-      <Grid>
-        <Paper className={classes.paper}>
-          <StockQuote />
-          <StockQuoteChart />
-        </Paper>
-      </Grid>
-      <Grid container direction="row" spacing={4} justify="center" alignItems="center">
-        <Grid item md={6} lg={4}>
-          <News />
+      {render && (
+        <Grid>
+          {isLoading ? (
+            <Grid container spacing={4} justify="center" alignItems="center" style={{ marginTop: "6rem", marginBottom: "12rem" }}>
+              <Loading />
+            </Grid>
+          ) : (
+            <StockQuoteCard />
+          )}
         </Grid>
-        <Grid item md={6} lg={4}>
-          <News />
+      )}
+      {/* news */}
+      {render && (
+        <Grid container direction="row" spacing={4} justify="center" alignItems="center">
+          {isLoading ? (
+            <Loading />
+          ) : (
+            news.map((news_card) => {
+              return <News key={news_card.datetime} {...news_card} />;
+            })
+          )}
         </Grid>
-        <Grid item md lg={4}>
-          <News />
-        </Grid>
-      </Grid>
-      {/* <Typography variant="overline" align="center" display="block" className={classes.margin}>
-        Data provided by IEX Cloud
-      </Typography> */}
+      )}
     </Container>
   );
 };

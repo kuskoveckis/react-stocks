@@ -22,7 +22,6 @@ const Buy = () => {
   const classes = useStyles();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("test");
   };
   return (
     <Container className={classes.container} maxWidth="lg">

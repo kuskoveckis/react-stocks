@@ -8,6 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import { useGlobalContext } from "../context";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,10 +22,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const StockQuote = () => {
+  const { stock_quote_data } = useGlobalContext();
+
   const classes = useStyles();
   return (
     <>
-      <Table size="large" className={classes.root}>
+      <Table size="medium" className={classes.root}>
         <TableHead>
           <TableRow>
             <TableCell align="center">Symbol</TableCell>
@@ -34,9 +37,9 @@ const StockQuote = () => {
         </TableHead>
         <TableBody>
           <TableRow className={classes.border}>
-            <TableCell align="center">AAPL</TableCell>
-            <TableCell align="center">AAPLE INC</TableCell>
-            <TableCell align="center">189.99 $</TableCell>
+            <TableCell align="center">{stock_quote_data.symbol}</TableCell>
+            <TableCell align="center">{stock_quote_data.companyName}</TableCell>
+            <TableCell align="center">{stock_quote_data.latestPrice} $</TableCell>
           </TableRow>
         </TableBody>
       </Table>

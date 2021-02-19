@@ -7,44 +7,41 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
 import { Link } from "@material-ui/core";
+import { useGlobalContext } from "../context";
 
 const useStyles = makeStyles({
   root: {
     minWidth: 245,
+    minHeight: 410,
   },
 });
 
-const News = () => {
+const News = ({ image, headline, summary, url }) => {
   const classes = useStyles();
+  const { news } = useGlobalContext();
   return (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Contemplative Reptile"
-          height="140"
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Lizard
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button size="small" color="primary">
-          Learn More
-        </Button>
-        <Link href="#" color="primary" underline="none">
-          Learn more
-        </Link>
-      </CardActions>
-    </Card>
+    <Grid item md={6} lg={4}>
+      <Card className={classes.root}>
+        <CardActionArea>
+          <CardMedia component="img" alt="Contemplative Reptile" height="140" image={image} title="Contemplative Reptile" />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {headline.substring(0, 100)}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {summary.substring(0, 250)}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Link href={url} color="primary" underline="none">
+            Learn more
+          </Link>
+        </CardActions>
+      </Card>
+    </Grid>
   );
 };
 
