@@ -23,7 +23,7 @@ const reducer = (state, action) => {
     return { ...state, news: action.payload, isLoading: false };
   }
   if (action.type === "STOCK_INTRADAY") {
-    return { ...state };
+    return { ...state, intradayData: action.payload, isLoading: false };
   }
 };
 

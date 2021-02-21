@@ -1,34 +1,28 @@
 import React from "react";
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from "recharts";
+import { AreaChart, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid, Tooltip, Area } from "recharts";
 import { Typography } from "@material-ui/core";
+import { useGlobalContext } from "../context";
 
 // Generate Sales Data
-function createDatax(time, amount) {
-  return { time, amount };
+
+function createData(time, price) {
+  return { time, price };
 }
 
-const datax = [
-  createDatax("00:00", 0),
-  createDatax("03:00", 300),
-  createDatax("06:00", 600),
-  createDatax("09:00", 800),
-  createDatax("10:00", 500),
-  createDatax("12:00", 1500),
-  createDatax("15:00", 1000),
-  createDatax("18:00", 2800),
-  createDatax("21:00", 2100),
-  createDatax("24:00", undefined),
-];
-
 const StockQuoteChart = () => {
+  const { intradayData } = useGlobalContext();
+  const newData = intradayData.map((item) => {
+    return createData(item.date, item.close);
+  });
+  console.log(newData);
   return (
     <React.Fragment>
       <Typography variant="h5" align="center">
-        Intraday Prices
+        Price chart
       </Typography>
       <ResponsiveContainer>
-        <LineChart
-          data={datax}
+        <AreaChart
+          data={newData}
           margin={{
             top: 16,
             right: 16,
@@ -36,15 +30,16 @@ const StockQuoteChart = () => {
             left: 24,
           }}
         >
-          <XAxis dataKey="time" stroke="#000000de" />
-          <YAxis stroke="#000000de">
-            <Label angle={270} position="left" style={{ textAnchor: "middle", fill: "blue" }}>
+          <XAxis dataKey="time" />
+          <YAxis>
+            <Label angle={270} position="left" style={{ textAnchor: "middle", fill: "black" }}>
               Price per share ($)
             </Label>
           </YAxis>
-          <Line type="monotone" dataKey="amount" stroke="#8884d8" dot={false} />
           <CartesianGrid stroke="#ccc" />
-        </LineChart>
+          <Tooltip />
+          <Area type="monotone" dataKey="price" stroke="#82ca9d" fillOpacity={0.6} fill="#82ca9d" />
+        </AreaChart>
       </ResponsiveContainer>
     </React.Fragment>
   );

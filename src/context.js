@@ -76,27 +76,35 @@ const AppProvider = ({ children }) => {
 
   const stockNews = async () => {
     try {
+      dispatch({ type: "RENDER" });
+      dispatch({ type: "LOADING" });
       const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/news/last/3?token={}`);
       const data = await response.json();
       dispatch({ type: "STOCK_NEWS", payload: data });
     } catch (error) {
       console.log(error);
+      dispatch({ type: "FINISHED_LOADING" });
     }
   };
 
   const stockIntradayPrice = async () => {
     try {
-      const response = await fetch("https://cloud.iexapis.com/stable/stock/aapl/intraday-prices?token={}");
+      dispatch({ type: "RENDER" });
+      dispatch({ type: "LOADING" });
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/chart/30d?token={}`);
       const data = await response.json();
+      console.log(data);
       dispatch({ type: "STOCK_INTRADAY", payload: data });
     } catch (error) {
       console.log(error);
+      dispatch({ type: "FINISHED_LOADING" });
     }
   };
 
   useEffect(() => {
     if (state.quoteSymbol) {
       stockQuote();
+      // stockIntradayPrice();
       stockNews();
     }
   }, [state.quoteSymbol]);
