@@ -32,6 +32,9 @@ const initialState = {
   stock_quote_data: {},
   news: [],
   intradayData: [],
+  logo: "",
+  buy: {},
+  sell: [],
   stock_total: 0,
   portfolio_total: 0,
   cash: 15000,
@@ -43,6 +46,37 @@ const AppProvider = ({ children }) => {
   const quote = (symbol) => {
     dispatch({ type: "LOADING" });
     dispatch({ type: "QUOTE_SYMBOL", payload: symbol });
+  };
+
+  const buy = (symbol, amount) => {
+    // dispatch({ type: "LOADING" });
+    const buy_request = {
+      symbol,
+      amount,
+    };
+    dispatch({ type: "BUY_REQUEST", payload: buy_request });
+  };
+
+  const stockBuy = async () => {
+    try {
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/quote?token={}`);
+      const data = await response.json();
+      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={}`);
+      const logo = await logo_response.json();
+      const date = new Date();
+      let newId = date.getTime().toString();
+      const portfolioItem = {
+        id: newId,
+        date: date,
+        symbol: data.symbol,
+        name: data.companyName,
+        price: data.latestPrice,
+        shares: state.buy.amount,
+        logo: logo.url,
+        action: "buy",
+      };
+      dispatch({ type: "UPDATE_PORTFOLIO", payload: portfolioItem });
+    } catch (error) {}
   };
 
   const stockQuote = async () => {
@@ -103,13 +137,25 @@ const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (state.quoteSymbol) {
-      stockQuote();
+      // stockQuote();
       // stockIntradayPrice();
-      stockNews();
+      // stockNews();
+      console.log("Stock quote fired");
     }
   }, [state.quoteSymbol]);
 
-  return <AppContext.Provider value={{ ...state, quote }}>{children}</AppContext.Provider>;
+  useEffect(() => {
+    if (state.buy) {
+      stockBuy();
+      console.log("buy stock fired");
+    }
+  }, [state.buy]);
+
+  useEffect(() => {
+    localStorage.setItem("stocks_portfolio", JSON.stringify(state.portfolio));
+  }, [state.portfolio]);
+
+  return <AppContext.Provider value={{ ...state, quote, buy }}>{children}</AppContext.Provider>;
 };
 
 export const useGlobalContext = () => {

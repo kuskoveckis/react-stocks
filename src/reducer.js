@@ -25,6 +25,16 @@ const reducer = (state, action) => {
   if (action.type === "STOCK_INTRADAY") {
     return { ...state, intradayData: action.payload, isLoading: false };
   }
+  if (action.type === "BUY_REQUEST") {
+    return { ...state, buy: action.payload };
+  }
+  if (action.type === "UPDATE_PORTFOLIO") {
+    return {
+      ...state,
+      portfolio: [...state.portfolio, action.payload],
+      buy: {},
+    };
+  }
 };
 
 export default reducer;

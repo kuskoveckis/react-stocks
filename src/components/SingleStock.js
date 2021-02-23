@@ -48,7 +48,9 @@ const SingleStock = (props) => {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell>{row.logo}</TableCell>
+        <TableCell>
+          <img src={row.logo} style={{ width: "45px", height: "auto" }} />
+        </TableCell>
         <TableCell>{row.symbol}</TableCell>
         <TableCell>{row.name}</TableCell>
         <TableCell>{row.shares}</TableCell>

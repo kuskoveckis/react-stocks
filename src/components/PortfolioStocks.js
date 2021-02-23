@@ -15,12 +15,6 @@ function createData(id, logo, symbol, name, shares, price, total) {
   return { id, logo, symbol, name, shares, price, total };
 }
 
-const rows = [
-  createData(0, "test", "AAPL", "Apple Inc.", "150", 174.55, 25000),
-  createData(1, "test", "GOOGL", "Apple Inc.", "170", 174.55, 25000),
-  createData(2, "test", "NTFLX", "Apple Inc.", "190", 174.55, 25000),
-];
-
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
@@ -30,8 +24,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PortfolioStocks() {
-  const { cash } = useGlobalContext();
+  const { cash, portfolio } = useGlobalContext();
   const classes = useStyles();
+  const rows = portfolio.map((stock) => {
+    const { id, logo, symbol, name, shares, price } = stock;
+    let total = parseInt(shares) * price;
+    total = parseFloat(total.toFixed(2));
+    return createData(id, logo, symbol, name, shares, price, total);
+  });
   return (
     <React.Fragment>
       <Title>Assets</Title>
