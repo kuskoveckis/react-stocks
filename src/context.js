@@ -12,6 +12,15 @@ const getLocalStoragePortfolio = () => {
   }
 };
 
+const getLocalStorageCash = () => {
+  let cash = localStorage.getItem("portfolio_cash");
+  if (cash) {
+    return (cash = JSON.parse(localStorage.getItem("portfolio_cash")));
+  } else {
+    return 50000;
+  }
+};
+
 const getLocalStorageHistory = () => {
   let portfolio_history = localStorage.getItem("portfolio_history");
   if (portfolio_history) {
@@ -34,10 +43,8 @@ const initialState = {
   intradayData: [],
   logo: "",
   buy: {},
-  sell: [],
-  stock_total: 0,
-  portfolio_total: 0,
-  cash: 15000,
+  sell: {},
+  cash: getLocalStorageCash(),
 };
 
 const AppProvider = ({ children }) => {
@@ -50,6 +57,7 @@ const AppProvider = ({ children }) => {
 
   const buy = (symbol, amount) => {
     // dispatch({ type: "LOADING" });
+    amount = parseInt(amount);
     const buy_request = {
       symbol,
       amount,
@@ -61,7 +69,7 @@ const AppProvider = ({ children }) => {
     try {
       const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/quote?token={}`);
       const data = await response.json();
-      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={}`);
+      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={} `);
       const logo = await logo_response.json();
       const date = new Date();
       let newId = date.getTime().toString();
@@ -75,8 +83,46 @@ const AppProvider = ({ children }) => {
         logo: logo.url,
         action: "buy",
       };
-      dispatch({ type: "UPDATE_PORTFOLIO", payload: portfolioItem });
-    } catch (error) {}
+      const stockTotal = data.latestPrice * state.buy.amount;
+      let newCash = state.cash - stockTotal;
+      newCash = parseFloat(newCash.toFixed(2));
+      dispatch({ type: "HISTORY", payload: portfolioItem });
+      dispatch({ type: "BUY_UPDATE_PORTFOLIO", payload: [portfolioItem, newCash] });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sell = (symbol, amount) => {
+    // dispatch({ type: "LOADING" });
+    amount = parseInt(amount);
+    const sell_request = {
+      symbol,
+      amount,
+    };
+    dispatch({ type: "SELL_REQUEST", payload: sell_request });
+  };
+
+  const stockSell = async () => {
+    try {
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.sell.symbol}/quote?token={}`);
+      const data = await response.json();
+      const date = new Date();
+      let newId = date.getTime().toString();
+      const portfolioItem = {
+        id: newId,
+        date: date,
+        symbol: data.symbol,
+        name: data.companyName,
+        price: data.latestPrice,
+        shares: state.sell.amount,
+        action: "sell",
+      };
+      dispatch({ type: "HISTORY", payload: portfolioItem });
+      dispatch({ type: "SELL_UPDATE_PORTFOLIO", payload: data });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const stockQuote = async () => {
@@ -145,17 +191,30 @@ const AppProvider = ({ children }) => {
   }, [state.quoteSymbol]);
 
   useEffect(() => {
-    if (state.buy) {
+    if (Object.keys(state.buy).length > 0) {
       stockBuy();
-      console.log("buy stock fired");
     }
   }, [state.buy]);
+
+  useEffect(() => {
+    if (Object.keys(state.sell).length > 0) {
+      stockSell();
+    }
+  }, [state.sell]);
 
   useEffect(() => {
     localStorage.setItem("stocks_portfolio", JSON.stringify(state.portfolio));
   }, [state.portfolio]);
 
-  return <AppContext.Provider value={{ ...state, quote, buy }}>{children}</AppContext.Provider>;
+  useEffect(() => {
+    localStorage.setItem("portfolio_history", JSON.stringify(state.history));
+  }, [state.history]);
+
+  useEffect(() => {
+    localStorage.setItem("portfolio_cash", JSON.stringify(state.cash));
+  }, [state.cash]);
+
+  return <AppContext.Provider value={{ ...state, quote, buy, sell }}>{children}</AppContext.Provider>;
 };
 
 export const useGlobalContext = () => {

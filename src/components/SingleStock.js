@@ -42,7 +42,7 @@ const SingleStock = (props) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <TableRow className={classes.root}>
+      <TableRow className={classes.root} key={row.id}>
         <TableCell>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}

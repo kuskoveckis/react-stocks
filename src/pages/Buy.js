@@ -44,6 +44,7 @@ const Buy = () => {
           <TextField
             id="standard-basic"
             label="Number of shares"
+            type="number"
             style={{ minWidth: "200px", marginBottom: "2rem" }}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
