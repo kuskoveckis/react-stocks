@@ -16,6 +16,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "./components/listItems";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Link from "@material-ui/core/Link";
 import "./App.css";
 import Error from "./components/Error";
 import Portfolio from "./pages/Portfolio";
@@ -141,8 +142,6 @@ function App() {
           </div>
           <Divider />
           <List>{mainListItems}</List>
-          <Divider />
-          <List>{secondaryListItems}</List>
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
@@ -168,8 +167,8 @@ function App() {
             </Route>
           </Switch>
           {/* Pages/sections would be placed here */}
-          <Typography variant="overline" align="center" display="block" className={classes.margin}>
-            Data provided by IEX Cloud
+          <Typography variant="overline" display="block" style={{ position: "absolute", bottom: "3rem", left: "50vw" }}>
+            Data provided by <Link href="https://iexcloud.io/">IEX Cloud</Link>
           </Typography>
         </main>
       </div>

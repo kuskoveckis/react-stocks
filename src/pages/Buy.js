@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import AlertMsg from "../components/AlertMsg";
 import TextField from "@material-ui/core/TextField";
+import { useHistory } from "react-router-dom";
 import { useGlobalContext } from "../context";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,8 +21,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Buy = () => {
+  let history = useHistory();
   const classes = useStyles();
-  const { buy } = useGlobalContext();
+  const { buy, alert } = useGlobalContext();
   const [symbol, setSymbol] = useState("");
   const [amount, setAmount] = useState(null);
   const handleSubmit = (e) => {
@@ -30,6 +32,18 @@ const Buy = () => {
     setSymbol("");
     setAmount(null);
   };
+
+  const redirect = () => {
+    setTimeout(() => {
+      if (alert.show === true && alert.severity === "success") {
+        history.push("/");
+      }
+    }, 2000);
+  };
+
+  useEffect(() => {
+    redirect();
+  }, [alert.show]);
   return (
     <Container className={classes.container} maxWidth="lg">
       <form onSubmit={handleSubmit}>
@@ -62,7 +76,7 @@ const Buy = () => {
         </Grid>
       </form>
       <Grid container alignItems="center" justify="center" style={{ marginTop: "4rem" }}>
-        <AlertMsg />
+        {alert.show && <AlertMsg />}
       </Grid>
     </Container>
   );

@@ -56,20 +56,23 @@ const AppProvider = ({ children }) => {
   };
 
   const buy = (symbol, amount) => {
-    // dispatch({ type: "LOADING" });
-    amount = parseInt(amount);
-    const buy_request = {
-      symbol,
-      amount,
-    };
-    dispatch({ type: "BUY_REQUEST", payload: buy_request });
+    if (amount === null) {
+      dispatch({ type: "ALERT", payload: "amount_error" });
+    } else {
+      amount = parseInt(amount);
+      const buy_request = {
+        symbol,
+        amount,
+      };
+      dispatch({ type: "BUY_REQUEST", payload: buy_request });
+    }
   };
 
   const stockBuy = async () => {
     try {
       const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/quote?token={}`);
       const data = await response.json();
-      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={} `);
+      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={}`);
       const logo = await logo_response.json();
       const date = new Date();
       let newId = date.getTime().toString();
@@ -88,19 +91,30 @@ const AppProvider = ({ children }) => {
       newCash = parseFloat(newCash.toFixed(2));
       dispatch({ type: "HISTORY", payload: portfolioItem });
       dispatch({ type: "BUY_UPDATE_PORTFOLIO", payload: [portfolioItem, newCash] });
+      dispatch({ type: "ALERT", payload: "buy" });
     } catch (error) {
       console.log(error);
+      dispatch({ type: "ALERT", payload: "incorrect_symbol" });
     }
   };
 
   const sell = (symbol, amount) => {
-    // dispatch({ type: "LOADING" });
-    amount = parseInt(amount);
-    const sell_request = {
-      symbol,
-      amount,
-    };
-    dispatch({ type: "SELL_REQUEST", payload: sell_request });
+    if (amount === null) {
+      dispatch({ type: "ALERT", payload: "amount_error" });
+    } else {
+      amount = parseInt(amount);
+      const stock = state.portfolio.filter((stock) => stock.symbol === symbol);
+      console.log(stock);
+      if (stock[0].shares < amount) {
+        dispatch({ type: "ALERT", payload: "sell_error" });
+      } else {
+        const sell_request = {
+          symbol,
+          amount,
+        };
+        dispatch({ type: "SELL_REQUEST", payload: sell_request });
+      }
+    }
   };
 
   const stockSell = async () => {
@@ -120,8 +134,10 @@ const AppProvider = ({ children }) => {
       };
       dispatch({ type: "HISTORY", payload: portfolioItem });
       dispatch({ type: "SELL_UPDATE_PORTFOLIO", payload: data });
+      dispatch({ type: "ALERT", payload: "sell" });
     } catch (error) {
       console.log(error);
+      dispatch({ type: "ALERT", payload: "incorrect_symbol" });
     }
   };
 
@@ -131,26 +147,12 @@ const AppProvider = ({ children }) => {
       dispatch({ type: "LOADING" });
       const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/quote?token={}`);
       const data = await response.json();
-      // if (data) {
-      //   const newId = new Date().getTime().toString(0);
-      //   const quoteData = {
-      //     id: newId,
-      //     symbol: data.symbol,
-      //     name: data.companyName,
-      //     price: data.latestPrice,
-      //   };
-      //   dispatch({ type: "STOCK_QUOTE", payload: quoteData });
-      // } else {
-      //   const newData = [];
-      //   const updateQuoteSymbol = [];
-      //   console.log("test test test");
-      //   dispatch({ type: "STOCK_QUOTE_FAIL", payload: { newData, updateQuoteSymbol } });
-      // }
       const reset = "";
       dispatch({ type: "STOCK_QUOTE", payload: [data, reset] });
     } catch (error) {
       console.log(error);
       dispatch({ type: "FINISHED_LOADING" });
+      dispatch({ type: "ALERT", payload: "incorrect_symbol" });
     }
   };
 
@@ -181,6 +183,12 @@ const AppProvider = ({ children }) => {
     }
   };
 
+  const resetAlert = () => {
+    setTimeout(() => {
+      dispatch({ type: "ALERT", payload: "reset" });
+    }, 2000);
+  };
+
   useEffect(() => {
     if (state.quoteSymbol) {
       // stockQuote();
@@ -197,7 +205,7 @@ const AppProvider = ({ children }) => {
   }, [state.buy]);
 
   useEffect(() => {
-    if (Object.keys(state.sell).length > 0) {
+    if (Object.keys(state.sell).length > 0 && state.sell.amount !== null) {
       stockSell();
     }
   }, [state.sell]);
@@ -213,6 +221,12 @@ const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("portfolio_cash", JSON.stringify(state.cash));
   }, [state.cash]);
+
+  useEffect(() => {
+    if (state.alert.show === true) {
+      resetAlert();
+    }
+  }, [state.alert]);
 
   return <AppContext.Provider value={{ ...state, quote, buy, sell }}>{children}</AppContext.Provider>;
 };

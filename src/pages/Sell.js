@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -11,6 +11,7 @@ import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import AlertMsg from "../components/AlertMsg";
 import TextField from "@material-ui/core/TextField";
 import { useGlobalContext } from "../context";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -20,7 +21,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sell = () => {
-  const { sell } = useGlobalContext();
+  let history = useHistory();
+  const { sell, alert, portfolio } = useGlobalContext();
   const classes = useStyles();
   const [amount, setAmount] = useState(null);
   const symb = useRef("");
@@ -29,6 +31,18 @@ const Sell = () => {
     sell(symb.current.textContent, amount);
     setAmount(null);
   };
+
+  const redirect = () => {
+    setTimeout(() => {
+      if (alert.show === true && alert.severity === "success") {
+        history.push("/");
+      }
+    }, 2000);
+  };
+
+  useEffect(() => {
+    redirect();
+  }, [alert.show]);
   return (
     <Container className={classes.container} maxWidth="lg">
       <form onSubmit={handleSubmit}>
@@ -36,9 +50,14 @@ const Sell = () => {
           <FormControl className={classes.formControl} style={{ minWidth: "200px", marginBottom: "2rem" }}>
             <InputLabel id="demo-simple-select-label">Stock</InputLabel>
             <Select labelId="demo-simple-select-label" id="demo-simple-select" ref={symb}>
-              <MenuItem value={10}>AAPL</MenuItem>
-              <MenuItem value={20}>GOOGL</MenuItem>
-              <MenuItem value={30}>NFLX</MenuItem>
+              {portfolio.map((stock) => {
+                const { id, name, symbol } = stock;
+                return (
+                  <MenuItem key={id} value={name}>
+                    {symbol.toUpperCase()}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
           <TextField

@@ -5,6 +5,24 @@ const reducer = (state, action) => {
   if (action.type === "LOADING") {
     return { ...state, isLoading: true };
   }
+  if (action.type === "ALERT") {
+    switch (action.payload) {
+      case "buy":
+        return { ...state, alert: { show: true, severity: "success", title: "Transaction complete", msg: "Your purchase added to your portfolio " } };
+      case "sell":
+        return { ...state, alert: { show: true, severity: "success", title: "Transaction complete", msg: "Stock sold " } };
+      case "incorrect_symbol":
+        return { ...state, alert: { show: true, severity: "error", title: "Incorrect symbol", msg: "Please try again with correct stock symbol" } };
+      case "amount_error":
+        return { ...state, alert: { show: true, severity: "error", title: "Incorrect amount", msg: "Please specify number of shares" } };
+      case "sell_error":
+        return { ...state, alert: { show: true, severity: "error", title: "Incorrect amount", msg: "You don not own specified amount of shares!" } };
+      case "reset":
+        return { ...state, alert: { show: false, severity: "", title: "", msg: "" } };
+      default:
+        return { ...state, alert: { show: false, severity: "", title: "", msg: "" } };
+    }
+  }
   if (action.type === "QUOTE_SYMBOL") {
     return { ...state, quoteSymbol: action.payload, isLoading: false, render: false };
   }
@@ -16,9 +34,6 @@ const reducer = (state, action) => {
       isLoading: false,
     };
   }
-  // if (action.type === "STOCK_QUOTE_FAIL") {
-  //   return { ...state, quote: action.payload[0], quoteSymbol: action.payload[1] };
-  // }
   if (action.type === "STOCK_NEWS") {
     return { ...state, news: action.payload, isLoading: false };
   }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
@@ -40,6 +40,23 @@ const SingleStock = (props) => {
   const { row } = props;
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [latestPrice, setLatestPrice] = useState(null);
+
+  const stock_quote = async () => {
+    try {
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${row.symbol}/quote?token={}`);
+      const data = await response.json();
+      setLatestPrice(data.latestPrice);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (open === true) {
+      stock_quote();
+    }
+  }, [open]);
   return (
     <>
       <TableRow className={classes.root} key={row.id}>
@@ -54,19 +71,19 @@ const SingleStock = (props) => {
         <TableCell>{row.symbol}</TableCell>
         <TableCell>{row.name}</TableCell>
         <TableCell>{row.shares}</TableCell>
-        <TableCell>{row.price}</TableCell>
-        <TableCell align="right">{row.total}</TableCell>
+        <TableCell>${row.price}</TableCell>
+        <TableCell align="right">${row.total}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={2} textAlign="center">
               <Typography variant="h6" gutterBottom component="div">
-                Current price
+                Latest price
               </Typography>
             </Box>
             <Box textAlign="center">
-              <Typography variant="h5">$125.35</Typography>
+              <Typography variant="h5">${latestPrice}</Typography>
             </Box>
             <Box display="flex" justifyContent="space-around" p={3}>
               <Link to="./buy" style={{ textDecoration: "none" }}>
@@ -74,9 +91,11 @@ const SingleStock = (props) => {
                   Buy
                 </Button>
               </Link>
-              <Button variant="outlined" color="secondary" className={classes.sellBtn}>
-                Sell
-              </Button>
+              <Link to="./sell" style={{ textDecoration: "none" }}>
+                <Button variant="outlined" color="secondary" className={classes.sellBtn}>
+                  Sell
+                </Button>
+              </Link>
             </Box>
           </Collapse>
         </TableCell>

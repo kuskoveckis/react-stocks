@@ -6,7 +6,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "./Title";
 import SingleStock from "./SingleStock";
-import { TableFooter } from "@material-ui/core";
+import { TableFooter, Typography } from "@material-ui/core";
 import { useGlobalContext } from "../context";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -35,35 +35,54 @@ export default function PortfolioStocks() {
   return (
     <React.Fragment>
       <Title>Assets</Title>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell>Logo</TableCell>
-            <TableCell>Symbol</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Shares</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell align="right">TOTAL</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <SingleStock key={row.id} row={row} />
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow className={classes.root}>
-            <TableCell>Cash</TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell align="right">{cash}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+      {portfolio.length > 0 ? (
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell>Logo</TableCell>
+              <TableCell>Symbol</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Shares</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell align="right">TOTAL</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <SingleStock key={row.id} row={row} />
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow className={classes.root}>
+              <TableCell>Cash</TableCell>
+              <TableCell></TableCell>
+              <TableCell></TableCell>
+              <TableCell></TableCell>
+              <TableCell></TableCell>
+              <TableCell></TableCell>
+              <TableCell align="right">{cash}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      ) : (
+        <>
+          <Typography align="center">You don't own any stocks</Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow className={classes.root}>
+                <TableCell>Cash</TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell align="right">{cash}</TableCell>
+              </TableRow>
+            </TableHead>
+          </Table>
+        </>
+      )}
     </React.Fragment>
   );
 }
