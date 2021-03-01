@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useEffect, useState } from "react";
+import React, { useContext, useReducer, useEffect } from "react";
 import reducer from "./reducer";
 
 const AppContext = React.createContext();
@@ -40,6 +40,7 @@ const initialState = {
   quoteSymbol: "",
   stock_quote_data: {},
   news: [],
+  financialNews: [],
   intradayData: [],
   logo: "",
   buy: {},
@@ -70,9 +71,9 @@ const AppProvider = ({ children }) => {
 
   const stockBuy = async () => {
     try {
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/quote?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/quote?token=`);
       const data = await response.json();
-      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token={}`);
+      const logo_response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.buy.symbol}/logo?token=`);
       const logo = await logo_response.json();
       const date = new Date();
       let newId = date.getTime().toString();
@@ -87,11 +88,15 @@ const AppProvider = ({ children }) => {
         action: "buy",
       };
       const stockTotal = data.latestPrice * state.buy.amount;
-      let newCash = state.cash - stockTotal;
-      newCash = parseFloat(newCash.toFixed(2));
-      dispatch({ type: "HISTORY", payload: portfolioItem });
-      dispatch({ type: "BUY_UPDATE_PORTFOLIO", payload: [portfolioItem, newCash] });
-      dispatch({ type: "ALERT", payload: "buy" });
+      if (stockTotal > state.cash) {
+        dispatch({ type: "ALERT", payload: "cash" });
+      } else {
+        let newCash = state.cash - stockTotal;
+        newCash = parseFloat(newCash.toFixed(2));
+        dispatch({ type: "HISTORY", payload: portfolioItem });
+        dispatch({ type: "BUY_UPDATE_PORTFOLIO", payload: [portfolioItem, newCash] });
+        dispatch({ type: "ALERT", payload: "buy" });
+      }
     } catch (error) {
       console.log(error);
       dispatch({ type: "ALERT", payload: "incorrect_symbol" });
@@ -119,7 +124,7 @@ const AppProvider = ({ children }) => {
 
   const stockSell = async () => {
     try {
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.sell.symbol}/quote?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.sell.symbol}/quote?token=`);
       const data = await response.json();
       const date = new Date();
       let newId = date.getTime().toString();
@@ -145,7 +150,7 @@ const AppProvider = ({ children }) => {
     try {
       dispatch({ type: "RENDER" });
       dispatch({ type: "LOADING" });
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/quote?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/quote?token=`);
       const data = await response.json();
       const reset = "";
       dispatch({ type: "STOCK_QUOTE", payload: [data, reset] });
@@ -160,7 +165,7 @@ const AppProvider = ({ children }) => {
     try {
       dispatch({ type: "RENDER" });
       dispatch({ type: "LOADING" });
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/news/last/3?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/news/last/3?token=`);
       const data = await response.json();
       dispatch({ type: "STOCK_NEWS", payload: data });
     } catch (error) {
@@ -173,13 +178,28 @@ const AppProvider = ({ children }) => {
     try {
       dispatch({ type: "RENDER" });
       dispatch({ type: "LOADING" });
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/chart/30d?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${state.quoteSymbol}/chart/7d?token=`);
       const data = await response.json();
       console.log(data);
       dispatch({ type: "STOCK_INTRADAY", payload: data });
     } catch (error) {
       console.log(error);
       dispatch({ type: "FINISHED_LOADING" });
+    }
+  };
+
+  const getFinNews = async () => {
+    try {
+      const response = await fetch(`https://newsapi.org/v2/everything?q=stocks&apiKey=`);
+      const data = await response.json();
+      console.log(data);
+      const news_data = [];
+      data.articles.forEach((news) => {
+        news_data.push(news);
+      });
+      dispatch({ type: "FIN_NEWS", payload: news_data });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -209,6 +229,10 @@ const AppProvider = ({ children }) => {
       stockSell();
     }
   }, [state.sell]);
+
+  useEffect(() => {
+    getFinNews();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("stocks_portfolio", JSON.stringify(state.portfolio));

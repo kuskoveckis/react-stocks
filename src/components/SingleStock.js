@@ -44,7 +44,7 @@ const SingleStock = (props) => {
 
   const stock_quote = async () => {
     try {
-      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${row.symbol}/quote?token={}`);
+      const response = await fetch(`https://cloud.iexapis.com/stable/stock/${row.symbol}/quote?token=`);
       const data = await response.json();
       setLatestPrice(data.latestPrice);
     } catch (error) {

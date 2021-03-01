@@ -13,7 +13,7 @@ import MoneyIcon from "@material-ui/icons/Money";
 import "../App.css";
 
 export const mainListItems = (
-  <div>
+  <div className="sidebar">
     <Link to="./" className="link">
       <ListItem button>
         <ListItemIcon>

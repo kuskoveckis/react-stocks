@@ -32,10 +32,10 @@ export default function PortfolioValue() {
   return (
     <React.Fragment>
       <Title>Portfolio Value</Title>
-      <Typography component="p" variant="h4">
+      <Typography component="p" variant="h4" style={{ color: "white" }}>
         ${portfolio_value}
       </Typography>
-      <Typography color="textSecondary" className={classes.depositContext}>
+      <Typography color="textSecondary" className={classes.depositContext} style={{ color: "white" }}>
         on {day} {months[month]}, {year}
       </Typography>
     </React.Fragment>

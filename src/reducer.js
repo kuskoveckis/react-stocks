@@ -15,6 +15,8 @@ const reducer = (state, action) => {
         return { ...state, alert: { show: true, severity: "error", title: "Incorrect symbol", msg: "Please try again with correct stock symbol" } };
       case "amount_error":
         return { ...state, alert: { show: true, severity: "error", title: "Incorrect amount", msg: "Please specify number of shares" } };
+      case "cash":
+        return { ...state, alert: { show: true, severity: "error", title: "Not enough cash!", msg: "Please specify number of shares" } };
       case "sell_error":
         return { ...state, alert: { show: true, severity: "error", title: "Incorrect amount", msg: "You don not own specified amount of shares!" } };
       case "reset":
@@ -96,6 +98,9 @@ const reducer = (state, action) => {
   }
   if (action.type === "HISTORY") {
     return { ...state, history: [...state.history, action.payload] };
+  }
+  if (action.type === "FIN_NEWS") {
+    return { ...state, financialNews: action.payload };
   }
 };
 

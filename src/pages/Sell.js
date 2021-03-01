@@ -68,7 +68,7 @@ const Sell = () => {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          <Button type="submit" variant="contained" color="primary" size="large" className={classes.button} startIcon={<AttachMoneyIcon />}>
+          <Button type="submit" variant="contained" color="secondary" size="large" className={classes.button} startIcon={<AttachMoneyIcon />}>
             Sell
           </Button>
         </Grid>
