@@ -53,6 +53,7 @@ const AppProvider = ({ children }) => {
 
   const quote = (symbol) => {
     dispatch({ type: "LOADING" });
+    symbol.toLowerCase();
     dispatch({ type: "QUOTE_SYMBOL", payload: symbol });
   };
 
@@ -61,6 +62,7 @@ const AppProvider = ({ children }) => {
       dispatch({ type: "ALERT", payload: "amount_error" });
     } else {
       amount = parseInt(amount);
+      symbol.toLowerCase();
       const buy_request = {
         symbol,
         amount,
@@ -107,6 +109,7 @@ const AppProvider = ({ children }) => {
     if (amount === null) {
       dispatch({ type: "ALERT", payload: "amount_error" });
     } else {
+      symbol.toLowerCase();
       amount = parseInt(amount);
       const stock = state.portfolio.filter((stock) => stock.symbol === symbol);
       console.log(stock);
@@ -190,11 +193,10 @@ const AppProvider = ({ children }) => {
 
   const getFinNews = async () => {
     try {
-      const response = await fetch(`https://newsapi.org/v2/everything?q=stocks&apiKey=`);
+      const response = await fetch(`https://api.nytimes.com/svc/topstories/v2/business.json?api-key=`);
       const data = await response.json();
-      console.log(data);
       const news_data = [];
-      data.articles.forEach((news) => {
+      data.results.forEach((news) => {
         news_data.push(news);
       });
       dispatch({ type: "FIN_NEWS", payload: news_data });
@@ -211,9 +213,9 @@ const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (state.quoteSymbol) {
-      // stockQuote();
-      // stockIntradayPrice();
-      // stockNews();
+      stockQuote();
+      stockIntradayPrice();
+      stockNews();
       console.log("Stock quote fired");
     }
   }, [state.quoteSymbol]);

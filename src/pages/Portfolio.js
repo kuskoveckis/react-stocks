@@ -21,7 +21,28 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   fixedHeight: {
-    height: 250,
+    [theme.breakpoints.down("xs")]: {
+      height: 250,
+    },
+    [theme.breakpoints.between("sm", "md")]: {
+      height: 250,
+    },
+    [theme.breakpoints.up("md")]: {
+      height: 450,
+    },
+    [theme.breakpoints.up("lg")]: {
+      height: 410,
+    },
+  },
+  newsHeight: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column",
+    height: 410,
+    [theme.breakpoints.down("md")]: {
+      height: 450,
+    },
   },
 }));
 
@@ -32,7 +53,7 @@ const Portfolio = ({ value }) => {
     <Container maxWidth="lg" className={classes.container}>
       <Grid container spacing={3}>
         {/* Portfolio Value */}
-        <Grid item xs={12} md={6} lg={6}>
+        <Grid item xs={12} md={5} lg={4}>
           <Paper
             className={`${fixedHeightPaper} `}
             style={
@@ -45,8 +66,8 @@ const Portfolio = ({ value }) => {
           </Paper>
         </Grid>
         {/* Portfolio Financial News */}
-        <Grid item xs={12} md={6} lg={6}>
-          <Paper className={fixedHeightPaper} style={{ height: "550px" }}>
+        <Grid item xs={12} md={7} lg={8}>
+          <Paper className={classes.newsHeight}>
             <FinNews />
           </Paper>
         </Grid>

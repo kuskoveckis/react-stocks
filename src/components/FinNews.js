@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   img: {
-    height: 255,
+    height: 140,
     display: "block",
     maxWidth: 400,
     overflow: "hidden",
@@ -39,7 +39,7 @@ export default function FinNews() {
   const theme = useTheme();
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = 20;
+  const maxSteps = financialNews.length;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -62,30 +62,32 @@ export default function FinNews() {
         onChangeIndex={handleStepChange}
         enableMouseEvents
       >
-        {financialNews.map((news, index) => (
-          <div key={news.index}>
-            {Math.abs(activeStep - index) <= 2 ? (
-              <Card key={news.index} elevation={0} className={classes.root}>
-                <CardMedia component="img" alt="" height="200" image={news.urlToImage} title="" />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {news.title}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    {news.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Link href={news.url} color="primary" underline="none">
-                    Learn more
-                  </Link>
-                </CardActions>
-              </Card>
-            ) : null}
-          </div>
-        ))}
+        {financialNews.length > 0 &&
+          financialNews.map((news, index) => (
+            <div key={news.index}>
+              {Math.abs(activeStep - index) <= 2 ? (
+                <Card key={news.index} elevation={0} className={classes.root}>
+                  <CardMedia component="img" alt="" height={news.multimedia[3].height} image={news.multimedia[3].url} title="" />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {news.title}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                      {news.abstract}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Link href={news.url} color="primary" underline="none">
+                      Learn more
+                    </Link>
+                  </CardActions>
+                </Card>
+              ) : null}
+            </div>
+          ))}
       </AutoPlaySwipeableViews>
       <MobileStepper
+        style={{ marginBottom: "0" }}
         steps={maxSteps}
         position="static"
         variant="text"
